@@ -1,14 +1,35 @@
 #include<Windows.h>
 #include<stdio.h>
 #include<string.h>
-
-
+#pragma comment( linker, "/subsystem:windows /entry:mainCRTStartup" )//不显示控制台
 VOID EnumFile(DWORD type, LPCWSTR dir);
+
+//UNICODE转UTF-8,参考自https://www.jianshu.com/p/1d54f59f8785
+char* UnicodeToUtf8(wchar_t* sUnicode, int& sLen)
+{
+	sLen = WideCharToMultiByte(CP_UTF8, NULL, sUnicode, -1, NULL, 0, NULL, NULL);
+	//UTF8虽然是Unicode的压缩形式，但也是多字节字符串，所以可以以char的形式保存 
+	char* sUtf8 = new char[sLen];
+	//unicode版对应的strlen是wcslen 
+	WideCharToMultiByte(CP_UTF8, NULL, sUnicode, -1, sUtf8, sLen, NULL, NULL);
+	return sUtf8;
+	/*delete[] sUtf8;
+	sUtf8 =NULL; */
+}
+
+VOID WriteIntoFile(HANDLE &hFile,LPCWSTR str) {
+	int sLen = 0;
+	char* uBuf = UnicodeToUtf8((wchar_t*)str, sLen);
+	WriteFile(hFile, uBuf, sLen, NULL, NULL);
+}
+
+
 //初始化_sidebar.md文件
 VOID Init_sidebar() {
 	HANDLE hFile = CreateFile(L"_sidebar.md", GENERIC_READ | GENERIC_WRITE, 0, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);//打开这个文件,如果没有就创建
-	char szHeader[MAX_PATH] = "<!-- docs/_sidebar.md created by koko-docsify_sidebarTool -->\r\n\r\n";
-	WriteFile(hFile,szHeader,strlen(szHeader)+sizeof(char),NULL,NULL);
+	wchar_t szHeader[MAX_PATH] = L"<!-- docs/_sidebar.md created by koko-docsify_sidebarTool -->\r\n\r\n";
+	
+	WriteIntoFile(hFile, szHeader);
 	CloseHandle(hFile);
 }
 
@@ -28,9 +49,9 @@ VOID Write_sidebar(LPCWSTR FileName,LPCWSTR FilePath) {
 
 	SetFilePointer(hFile,-1,NULL,FILE_END);
 
-	char szTmpBuf[MAX_PATH] = { 0 };
-	WideCharToMultiByte(CP_ACP,NULL,wcBuf,-1,szTmpBuf,MAX_PATH,NULL,NULL);
-	WriteFile(hFile,szTmpBuf,strlen(szTmpBuf)+sizeof(char),NULL,NULL);
+	//char szTmpBuf[MAX_PATH] = { 0 };
+	//WideCharToMultiByte(CP_ACP,NULL,wcBuf,-1,szTmpBuf,MAX_PATH,NULL,NULL);
+	WriteIntoFile(hFile,wcBuf);
 
 	CloseHandle(hFile);
 }
@@ -38,9 +59,9 @@ VOID Write_sidebar(LPCWSTR FileName,LPCWSTR FilePath) {
 //写入空格
 VOID Write_space() {
 	HANDLE hFile = CreateFile(L"_sidebar.md", GENERIC_READ | GENERIC_WRITE, 0, NULL, OPEN_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL);//打开这个文件,如果没有就创建
-	char szTmpBuf[MAX_PATH] = "  ";
-	SetFilePointer(hFile, 0, NULL, FILE_END);
-	WriteFile(hFile, szTmpBuf, strlen(szTmpBuf) + sizeof(char), NULL, NULL);
+	SetFilePointer(hFile, -1, NULL, FILE_END);
+
+	WriteIntoFile(hFile,L"  ");
 	CloseHandle(hFile);
 }
 
@@ -131,5 +152,6 @@ int main() {
 	Init_sidebar();
 	EnumDir(1);
 	EnumFile();
+	MessageBox(NULL,L"创建完成",L"Docsify-AutoSidebar",MB_OK);
 	return 0;
 }
