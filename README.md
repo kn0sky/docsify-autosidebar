@@ -1,6 +1,12 @@
 # docsify-autosidebar
- 自动生成Docsify 的 侧边栏文件_sidebar.md
+ 一个小工具用于自动生成Docsify的侧边栏文件_sidebar.md
+ ## 准备:
+ Docsify博客要需要提前安装好侧边栏折叠插件: https://github.com/iPeng6/docsify-sidebar-collapse
+ 
  ## 使用方法:
- 1. 从Release下载本软件
- 2. 将本软件放入Docsify根目录下
- 3. 点击即可自动生成_sidebar.md,可以先备份自己原来的_sidebar.md以防万一
+ 1. 从[Release](https://github.com/kn0sky/docsify-autosidebar/releases)下载本软件
+ 2. 将本软件放入你的Docsify根目录下
+ 3. 双击运行即可自动生成_sidebar.md,当然,可以先备份自己原来的_sidebar.md以防万一
+
+## 效果演示:
+![]()
