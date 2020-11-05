@@ -9,4 +9,4 @@
  3. 双击运行即可自动生成_sidebar.md,当然,可以先备份自己原来的_sidebar.md以防万一
 
 ## 效果演示:
-![]()
+![](https://raw.githubusercontent.com/kn0sky/docsify-autosidebar/master/%E7%A4%BA%E4%BE%8B%E6%88%AA%E5%9B%BE.png)
