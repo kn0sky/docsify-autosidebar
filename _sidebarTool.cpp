@@ -76,7 +76,11 @@ VOID EnumDir(DWORD type=0) {
 	HANDLE hSearch = FindFirstFile(L"*", &FileData);//获取所在目录的所有文件
 
 	do{
-		if (FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && lstrcmp(FileData.cFileName, L".") != 0 && lstrcmp(FileData.cFileName, L"..") != 0) {
+		if (FileData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY && 
+			lstrcmp(FileData.cFileName, L".") != 0 &&
+			lstrcmp(FileData.cFileName, L"..") != 0 &&
+			wcsncmp(FileData.cFileName, L"_",1) != 0
+			) {
 				WCHAR wcFilePath[MAX_PATH] = { 0 };
 				lstrcat(wcFilePath, FileData.cFileName);
 				lstrcat(wcFilePath, L"/README.md");
@@ -108,7 +112,7 @@ VOID EnumFile(DWORD type=0,LPCWSTR dir=L"directory") {
 		case 0: {
 			hSearch = FindFirstFile(L"*.md", &FileData);//获取所在目录的所有文件
 			do {
-				if (FileData.dwFileAttributes == FILE_ATTRIBUTE_ARCHIVE) {
+				if (FileData.dwFileAttributes == FILE_ATTRIBUTE_ARCHIVE && wcsncmp(FileData.cFileName, L"_", 1) != 0) {
 					//拼接文件名
 					WCHAR wcFileName[MAX_PATH] = { 0 };
 					wcsncpy_s(wcFileName, FileData.cFileName, wcslen(FileData.cFileName) - 3);
@@ -124,7 +128,10 @@ VOID EnumFile(DWORD type=0,LPCWSTR dir=L"directory") {
 			wcscat_s(DirPath, L"/*.md");
 			hSearch = FindFirstFile(DirPath, &FileData);//获取所在目录的所有文件
 			do {
-				if (FileData.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE) {
+				if (FileData.dwFileAttributes & FILE_ATTRIBUTE_ARCHIVE &&
+					wcsncmp(FileData.cFileName, L"README.md", 6) != 0 &&
+					wcsncmp(FileData.cFileName, L"_", 1) != 0
+					) {
 					//拼接文件名
 					WCHAR wcFileName[MAX_PATH] = { 0 };
 					wcsncpy_s(wcFileName, FileData.cFileName, wcslen(FileData.cFileName) - 3);
